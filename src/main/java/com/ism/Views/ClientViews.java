@@ -1,9 +1,9 @@
 package com.ism.Views;
 
 
-import com.ism.Core.Database.ClientRepoListInt;
-import com.ism.Core.Database.Impl.ViewImpl;
+import com.ism.Repositories.JPA.ClientRepoJpa;
 import com.ism.Service.ClientServiceInt;
+import com.ism.Views.Impl.ViewImpl;
 import com.ism.entities.Client;
 import com.ism.entities.User;
 
@@ -12,9 +12,9 @@ import java.util.Scanner;
 
 public class ClientViews extends ViewImpl<Client,User> implements ClientViewsInt{
   
-  private ClientServiceInt<Client,ClientRepoListInt> clientService;
+  private ClientServiceInt<Client,ClientRepoJpa> clientService;
   private UserViewInt uViews;
-  public ClientViews(Scanner scan,ClientServiceInt<Client,ClientRepoListInt> clientService,UserViewInt uViews) {
+  public ClientViews(Scanner scan,ClientServiceInt<Client,ClientRepoJpa> clientService,UserViewInt uViews) {
     ViewImpl.scan = scan;
     this.clientService = clientService;
     this.uViews = uViews;
@@ -23,7 +23,6 @@ public class ClientViews extends ViewImpl<Client,User> implements ClientViewsInt
   @Override
   public Client created(User us) {
     Client client = new Client();
-    do {
       System.out.println("Enter surname: ");
       scan.nextLine();
       client.setName(scan.nextLine());
@@ -32,7 +31,7 @@ public class ClientViews extends ViewImpl<Client,User> implements ClientViewsInt
       System.out.println("Enter address: ");
       client.setAdresse(scan.nextLine());
       choixCreateUser(client,us);
-    } while (clientService.search(client.getTel()) != null);
+      System.out.println(client);
     return client;
   }
 

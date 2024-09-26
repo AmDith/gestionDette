@@ -2,25 +2,16 @@ package com.ism;
 
 import java.util.Scanner;
 
-import com.ism.Core.Database.ArticleRepoListInt;
-import com.ism.Core.Database.ClientRepoListInt;
-import com.ism.Core.Database.DetteRepoListInt;
-import com.ism.Core.Database.UserRepoListInt;
 import com.ism.Factory.FactoryService.FactoryService;
 import com.ism.Factory.FactoryViews.FactoryViews;
-import com.ism.Factory.FactotyRepo.BD.FactoryRepoBd;
-import com.ism.Factory.FactotyRepo.list.FactoryRepoList;
-import com.ism.Repositories.BD.ClientRepoBd;
-import com.ism.Service.ArticleServiceInt;
+import com.ism.Factory.FactotyRepo.JPA.FactoryRepoJpa;
+import com.ism.Repositories.JPA.ClientRepoJpa;
+import com.ism.Repositories.JPA.UserRepoJpa;
 import com.ism.Service.ClientServiceInt;
-import com.ism.Service.DetteServiceint;
 import com.ism.Service.UserServiceInt;
-import com.ism.Views.ArticleViewInt;
 import com.ism.Views.ClientViewsInt;
 import com.ism.Views.UserViewInt;
-import com.ism.entities.Article;
 import com.ism.entities.Client;
-import com.ism.entities.Dette;
 import com.ism.entities.User;
 
 public class Main {
@@ -32,177 +23,33 @@ public class Main {
         int choix3;
         Client cl;
         //Fabrique
-        ArticleRepoListInt<Article> aRepo = FactoryRepoList.getInstanceA();
-        UserRepoListInt uRepo = FactoryRepoBd.getInstanceU();
-        ClientRepoListInt cRepo = FactoryRepoBd.getInstanceC(uRepo);
-        DetteRepoListInt dRepo = FactoryRepoList.getInstanceD();
+        UserRepoJpa uRepo = FactoryRepoJpa.getInstanceU();
+        ClientRepoJpa cRepo = FactoryRepoJpa.getInstanceC();
         //
-        ArticleServiceInt<Article,ArticleRepoListInt<Article>> aService = FactoryService.getInstanceA(aRepo);
-        ClientServiceInt<Client,ClientRepoListInt>  cService = FactoryService.getInstanceC(cRepo);
-        DetteServiceint<Dette,DetteRepoListInt> dService = FactoryService.getInstanceD(dRepo);
-        UserServiceInt<User,UserRepoListInt> uService = FactoryService.getInstanceU(uRepo);
-        ArticleViewInt aViews = FactoryViews.getInstanceA(sc, aService);
+        ClientServiceInt<Client,ClientRepoJpa>  cService = FactoryService.getInstanceC(cRepo);
+        UserServiceInt<User,UserRepoJpa> uService = FactoryService.getInstanceU(uRepo);
         UserViewInt uViews = FactoryViews.getInstanceU(sc, uService);
         ClientViewsInt cViews = FactoryViews.getInstanceC(sc, cService, uViews);
         do {
-            choix = affichageMenuprincipal();
+            choix = affichageMenuprincipal3();
             switch (choix) {
-                case 1:
-                    do {
-                        choix2 = affichageMenuBoutiquier();
-                        switch (choix2) {
                             case 1:
                                 cService.saveList(cViews.created(null));
                                 break;
                             case 2:
                                 cViews.affiche(cService.show());
-                                break;   
+                                break;
                             case 3:
-                                sc.nextLine();
-                                System.out.println(cService.search(SaisieNumero()));
-                                break;  
+                                uService.saveList(uViews.created(null));
+                                break;
+                            
                             case 4:
-                                do {
-                                    choix2=affichageSousMenu("1-Pour un client","2-Pour un boutiquier ou admin");
-                                    
-                                    switch (choix2) {
-                                        case 1:
-                                            sc.nextLine();
-                                            cl = cService.search(SaisieNumero());
-                                            if (cl.getUser() == null) {//.getRole pour les listes
-                                                User us = uViews.created(cl);
-                                                uService.saveList(us);
-                                                cl.setUser(us);
-                                                if (cRepo instanceof ClientRepoBd) {
-                                                    cService.findData().update(cl);//BD SEULEMENT
-                                                }
-                                            } else{
-                                                System.out.println("Ce client a deje un compte");
-                                            }
-                                            break;
-                                        case 2:
-                                            sc.nextLine();
-                                            User us = uViews.created(null);
-                                            uService.saveList(us);
-                                            break;    
-                                    
-                                        default:
-                                            break;
-                                    }
-                                } while (choix2 != 2 && choix2 != 1);
-                                break; 
-                            case 5:
-                                choix3 = affichageSousMenu("1-Actif", "2-Par role");
-                                if (choix3 == 1) {
-                                    uViews.affiche(uService.show());
-                                }
-                                else{
-                                    uViews.filtreRole(uViews.AffAss().getNomRole());
-                                }
-                                break; 
-                            default:
+                                uViews.affiche(uService.show());
                                 break;
-                        }
-                    } while (choix2 != 6);
-                    break;
-                case 2:
-                    do {
-                        choix2 = affichageMenuAmin();
-                        switch (choix2) {
-                            case 1:
-                            sc.nextLine();
-                            cl = cService.search(SaisieNumero());
-                            if (cl.getUser() == null) {
-                                User us = uViews.created(cl);
-                                uService.saveList(us);
-                                cl.setUser(us);
-                                // cService.findData().update(cl);//BD SEULEMENT
-                                
-                                } else{
-                                    System.out.println("Ce client a deje un compte");
-                                }
-                                break;
-                            case 2:
-                                sc.nextLine();
-                                User us = uViews.created(null);
-                                uService.saveList(us);
-                                break;   
-                            case 3:
-                                User use;
-                                System.out.println("Entrez le login de passe du compte");
-                                sc.nextLine();
-                                String mot = sc.nextLine();
-                                use = uService.findData().selectByLogin(mot);
-                                if (use != null) {
-                                    choix3 = affichageSousMenu("1-Desactiver un compte utilisateur", "2-Activer un compte utilisateur");
-                                    if (choix3 == 1) {
-                                        uService.Off(use);
-                                     }
-                                     else{
-                                        uService.On(use);
-                                     }
-                                }else{
-                                    System.out.println("Ce compte n'existe pas");
-                                }
-                                break;
-                            case 4:
-                                choix3 = affichageSousMenu("1-Actif", "2-Par role");
-                                if (choix3 == 1) {
-                                    uViews.affiche(uService.show());
-                                }
-                                else{
-                                    uViews.filtreRole(uViews.AffAss().getNomRole());
-                                }
-                                break;
-
-                            case 5:
-                                choix3 = affichageSousMenu2("1-Creer des articles", "2-Lister les articles","3-Filtrer par disponibilite");
-                                switch (choix3) {
-                                    case 1:
-                                        aService.saveList(aViews.created(null));
-                                        break;
-                                    case 2:
-                                        aViews.Nonaffiche(aService.show());
-                                        break;
-                                    case 3:
-                                        aViews.affiche(aService.show());
-                                        break;
-                                
-                                    default:
-                                        break;
-                                }
-                                break; 
-                            case 6:
-                                int va;
-                                String scx;
-                                do {
-                                    System.out.println("Entrez la quantité retiree");
-                                    va = sc.nextInt();
-                                    sc.nextLine();
-                                    System.out.println("Entrez le libelle de l'article");
-                                    scx = sc.nextLine();
-                                    aService.updateQteStock(va, scx);
-                                } while (aService.findData().selectByLibelle(scx) == null);
-                                break; 
-                            case 7:
-                                dService.archiverSolider();
-                                break;          
-                        
-                            default:
-                                break;
-                        }
-                    } while (choix2 != 8);
-                    
-                    break;
-                case 3:
-                                        
-                     break;
+                            }
+                
             
-                default:
-                    break;
-            }
-            
-        } while (choix != 3);
+        } while (choix != 5);
     }
 
     public static int affichageMenuAmin(){
@@ -231,6 +78,20 @@ public class Main {
             System.out.println("3-Utilisateur de rôle Client");
             choix = sc.nextInt();
         }while(choix<0 || choix>2);
+        return choix;
+        
+    }
+
+    public static int affichageMenuprincipal3(){
+        int choix;
+        do{
+            System.out.println("Menu");
+            System.out.println("1-Creer un client");
+            System.out.println("2-Lister les clients");
+            System.out.println("3-Creer un user");
+            System.out.println("4-Lister les users");
+            choix = sc.nextInt();
+        }while(choix<0 || choix>4);
         return choix;
         
     }

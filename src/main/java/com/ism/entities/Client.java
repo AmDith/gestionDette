@@ -1,39 +1,46 @@
 package com.ism.entities;
 
-import java.util.List;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
+@Entity
+@Table(name = "Client")
 @ToString(onlyExplicitlyIncluded = true)
-
 public class Client {
-  @ToString.Include
-  private int id;
-  @ToString.Include
-  private String name;
-  @ToString.Include
-  private String tel;
-  @ToString.Include
-  private String adresse;
-  private User user;
-  private List<Dette> dettes;
-  private static int nbreC;
 
-  public Client() {
-    this.id = ++nbreC;
-  }
-  
-public static void setNbreC(int n){
-  Client.nbreC = n;
-}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @ToString.Include
+    private int id;
 
-public static int getNbreC() {
-  return Client.nbreC;
-}
+    @ToString.Include
+    @Column(length = 25,unique = true)
+    private String name;
 
+    @ToString.Include
+    @Column(length = 25,unique = true)
+    private String tel;
 
-  
+    @ToString.Include
+    @Column(length = 25,unique = false)
+    private String adresse;
+
+    // Navigabilité vers User
+    @OneToOne
+    @JoinColumn
+    private User user;
+
+    // Relation avec Dette
+    // @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    // private List<Dette> dettes;
 
 }

@@ -1,9 +1,8 @@
 package com.ism.Views;
 
-import com.ism.Core.Database.ArticleRepoListInt;
-import com.ism.Core.Database.UserRepoListInt;
-import com.ism.Core.Database.Impl.ViewImpl;
+import com.ism.Repositories.JPA.UserRepoJpa;
 import com.ism.Service.UserServiceInt;
+import com.ism.Views.Impl.ViewImpl;
 import com.ism.entities.Client;
 import com.ism.entities.Role;
 import com.ism.entities.User;
@@ -17,17 +16,17 @@ import java.util.List;
 public class UserViews extends ViewImpl<User,Client> implements UserViewInt {
 
 
-  private UserServiceInt<User,UserRepoListInt> userService;
+  private UserServiceInt<User,UserRepoJpa> userService;
 
-  public UserViews(Scanner scan,UserServiceInt<User,UserRepoListInt> userService) {
+  public UserViews(Scanner scan,UserServiceInt<User,UserRepoJpa> userService) {
     ViewImpl.scan = scan;
     this.userService = userService;
   }
 
   @Override
   public User created(Client client) {
+    scan.nextLine();
     User user = new User();
-    do {
       System.out.println("Veuillez saisir votre email");
       user.setEmail(scan.nextLine());
       System.out.println("Veuillez saisir votre login");
@@ -44,7 +43,6 @@ public class UserViews extends ViewImpl<User,Client> implements UserViewInt {
       }else{
         user.setRole(findRole());
       }
-    }while (userService.findData().selectByLogin(user.getLogin())!= null);
     return user;
   }
 

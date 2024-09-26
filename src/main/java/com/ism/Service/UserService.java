@@ -3,7 +3,7 @@ package com.ism.Service;
 
 import java.util.List;
 
-import com.ism.Core.Database.UserRepoListInt;
+import com.ism.Repositories.JPA.UserRepoJpa;
 import com.ism.entities.User;
 import com.ism.enums.Etat;
 
@@ -11,12 +11,12 @@ import lombok.Data;
 
 @Data
 
-public class UserService implements UserServiceInt<User,UserRepoListInt>{
+public class UserService implements UserServiceInt<User,UserRepoJpa>{
 
-  private UserRepoListInt userRepo;
+  private UserRepoJpa userRepo;
 
   
-  public UserService(UserRepoListInt userRepo) {
+  public UserService(UserRepoJpa userRepo) {
     this.userRepo = userRepo;
   }
 
@@ -52,7 +52,7 @@ public class UserService implements UserServiceInt<User,UserRepoListInt>{
 
 
   @Override
-  public UserRepoListInt findData() {
+  public UserRepoJpa findData() {
     return userRepo;
   }
 

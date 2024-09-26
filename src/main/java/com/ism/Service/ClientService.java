@@ -2,19 +2,19 @@ package com.ism.Service;
 
 import java.util.List;
 
-import com.ism.Core.Database.ClientRepoListInt;
+import com.ism.Repositories.JPA.ClientRepoJpa;
 import com.ism.entities.Client;
 
 import lombok.Data;
 
 @Data
 
-public class ClientService implements ClientServiceInt<Client,ClientRepoListInt> {
+public class ClientService implements ClientServiceInt<Client,ClientRepoJpa> {
 
-  private ClientRepoListInt clientRepo;
+  private ClientRepoJpa clientRepo;
 
   
-  public ClientService(ClientRepoListInt clientRepo) {
+  public ClientService(ClientRepoJpa clientRepo) {
     this.clientRepo = clientRepo;
   }
 
@@ -34,14 +34,11 @@ public class ClientService implements ClientServiceInt<Client,ClientRepoListInt>
     return clientRepo.selectAll();
   }
 
-  @Override
-  public Client search(String phone) {
-    return clientRepo.selectByPhone(phone);
-}
+  
 
 
   @Override
-  public ClientRepoListInt findData() {
+  public ClientRepoJpa findData() {
     return clientRepo;
   }
 
